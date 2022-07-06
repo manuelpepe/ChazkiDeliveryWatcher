@@ -1,0 +1,3 @@
+*.log
+PyWhatKit_DB.txt
+venv/
