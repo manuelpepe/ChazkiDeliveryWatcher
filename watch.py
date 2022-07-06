@@ -3,10 +3,11 @@ from __future__ import annotations
 import os
 import time
 import argparse
-import pywhatkit
 
 from datetime import datetime, timedelta
 from dataclasses import dataclass
+
+import pywhatkit
 
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -16,12 +17,17 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def _safe_find(driver, *args, method: str = "find_elements", timeout: int = 40):
+def _safe_find(
+    driver: WebDriver | WebElement,
+    *args,
+    method: str = "find_elements",
+    timeout: int = 40,
+):
     WebDriverWait(driver, timeout).until(EC.presence_of_element_located(args))
     return getattr(driver, method)(*args)
 
 
-def _clear_console():
+def _clear_console() -> None:
     if os.name == "nt":
         os.system("cls")
     else:
@@ -35,7 +41,7 @@ class Entry:
     message: str
 
 
-def _parse_entry(columns: list[WebElement]):
+def _parse_entry(columns: list[WebElement]) -> Entry:
     date = columns[0].text
     time = columns[1].text
     location = columns[2].text
@@ -64,7 +70,7 @@ class Watcher:
         return self._entries
 
     @entries.setter
-    def entries(self, new_entries: list[Entry]):
+    def entries(self, new_entries: list[Entry]) -> None:
         added = []
         for entry in new_entries:
             if entry not in self._entries:
@@ -73,7 +79,7 @@ class Watcher:
             self._notify(added)
         self._entries = new_entries
 
-    def watch(self):
+    def watch(self) -> None:
         while True:
             self.entries = self._find_entries()
             self._print_entries()
